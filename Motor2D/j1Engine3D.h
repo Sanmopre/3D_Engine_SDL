@@ -2,8 +2,25 @@
 #define __j1ENGINE3D_H__
 
 #include "j1Module.h"
+#include <vector>
+#include "p2DynArray.h"
+using namespace std;
 
-struct SDL_Texture;
+
+
+struct Vector3D {
+	float x, y, z;
+};
+
+struct Triangle {
+	Vector3D vertices[3];
+};
+
+struct Mesh {
+	vector<Triangle> tris;
+};
+
+
 
 class j1Engine3D : public j1Module
 {
@@ -30,6 +47,9 @@ public:
 	bool CleanUp();
 
 private:
+
+public:
+	Mesh mesh_cube;
 };
 
 #endif // __j1ENGINE3D_H__
