@@ -75,8 +75,12 @@ bool j1Engine3D::PreUpdate()
 bool j1Engine3D::Update(float dt)
 {
 
-	for (auto Triangle : mesh_cube.tris) {
-	
+	for (auto tri : mesh_cube.tris) 
+	{
+		Triangle_s a;
+		MultiplyMatrixVector(tri.vertices[0], a.vertices[0], matProj);
+		MultiplyMatrixVector(tri.vertices[1], a.vertices[1], matProj);
+		MultiplyMatrixVector(tri.vertices[2], a.vertices[2], matProj);
 	}
 
 	return true;

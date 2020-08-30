@@ -12,12 +12,12 @@ struct Vector3D {
 	float x, y, z;
 };
 
-struct Triangle {
+struct Triangle_s {
 	Vector3D vertices[3];
 };
 
 struct Mesh {
-	vector<Triangle> tris;
+	vector<Triangle_s> tris;
 };
 
 struct Matrix4x4 {
@@ -64,6 +64,9 @@ private:
 
 public:
 	Mesh mesh_cube;
+
+	Triangle_s tri;
+
 };
 
 #endif // __j1ENGINE3D_H__
