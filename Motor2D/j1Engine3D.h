@@ -20,7 +20,9 @@ struct Mesh {
 	vector<Triangle> tris;
 };
 
-
+struct Matrix4x4 {
+	float m[4][4] = { 0 };
+};
 
 class j1Engine3D : public j1Module
 {
@@ -47,6 +49,18 @@ public:
 	bool CleanUp();
 
 private:
+
+	void MultiplyMatrixVector(Vector3D& i, Vector3D& o, Matrix4x4& m);
+
+
+	Matrix4x4 matProj;
+
+	//Projection matrix variables
+	float fNear = 0.1f;
+	float fFar = 1000.0f;
+	float fFov = 90.0f;
+	float fAspectRatio = 1.0f;//screen height / screen width
+	float fFovRad = 1.0f / tanf(fFov * 0.5f / 180.0f * 3.14159f);
 
 public:
 	Mesh mesh_cube;
