@@ -74,10 +74,10 @@ bool j1Engine3D::PreUpdate()
 
 bool j1Engine3D::Update(float dt)
 {
-
+	/*
 	for (auto tri : mesh_cube.tris) 
 	{
-		triangle triProjected, triTranslated, triRotatedZ, triRotatedZX;
+		Triangle_s triProjected, triTranslated, triRotatedZ, triRotatedZX;
 
 		// Rotate in Z-Axis
 		MultiplyMatrixVector(tri.p[0], triRotatedZ.p[0], matRotZ);
@@ -111,7 +111,7 @@ bool j1Engine3D::Update(float dt)
 		triProjected.p[2].x *= 0.5f * (float)ScreenWidth();
 		triProjected.p[2].y *= 0.5f * (float)ScreenHeight();
 	}
-
+*/
 	return true;
 }
 
