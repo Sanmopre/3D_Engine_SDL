@@ -135,6 +135,17 @@ bool j1Engine3D::Update(float dt)
 		//if (normal.z < 0) 
 		if(normal.x * (triTranslated.vertices[0].x - Camera.x) + normal.y * (triTranslated.vertices[0].y - Camera.y) + normal.z * (triTranslated.vertices[0].z - Camera.z) < 0.0f)
 		{
+			
+		Vector3D light = { 0.0f, 0.0f, -1.0f };
+		float l = sqrt(light.x*light.x + light.y * light.y + light.z * light.z);
+		light.x /= l;
+		light.y /= l;
+		light.z /= l;
+
+		float dp = normal.x * light.x + normal.y * light.y + normal.z * light.z;
+
+		float light_value = dp * 255;
+
 		MultiplyMatrixVector(triTranslated.vertices[0], triProjected.vertices[0], matProj);
 		MultiplyMatrixVector(triTranslated.vertices[1], triProjected.vertices[1], matProj);
 		MultiplyMatrixVector(triTranslated.vertices[2], triProjected.vertices[2], matProj);
@@ -161,7 +172,7 @@ bool j1Engine3D::Update(float dt)
 
 
 		//App->render->DrawTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y);
-	App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y);
+	App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, light_value);
 		}
 	}
 
