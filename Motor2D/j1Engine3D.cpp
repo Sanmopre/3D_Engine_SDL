@@ -75,8 +75,10 @@ bool j1Engine3D::PreUpdate()
 bool j1Engine3D::Update(float dt)
 {
 	
+	App->render->DrawQuad(App->render->unit_rect, 200, 200, 200, 100, true, true);
+
 	Matrix4x4 matRotZ, matRotX;
-	fTheta += 0.0004f;
+	fTheta += 0.02f;
 
 	//ROT Z
 	matRotZ.m[0][0] = cosf(fTheta);
@@ -158,8 +160,9 @@ bool j1Engine3D::Update(float dt)
 
 
 
-		App->render->DrawTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y);
-	}
+		//App->render->DrawTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y);
+	App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y);
+		}
 	}
 
 

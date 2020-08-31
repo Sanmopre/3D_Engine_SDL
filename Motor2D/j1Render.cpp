@@ -4,6 +4,7 @@
 #include "j1Window.h"
 #include "j1Render.h"
 
+
 #define VSYNC true
 
 j1Render::j1Render() : j1Module()
@@ -251,4 +252,74 @@ void j1Render::DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3)
 	DrawLine(x1,y1,x2,y2,200, 200, 200, 100, true);
 	DrawLine(x2, y2, x3, y3, 200, 200, 200, 100, true);
 	DrawLine(x3, y3, x1, y1, 200, 200, 200, 100, true);
+}
+
+float j1Render::Area(int x1, int y1, int x2, int y2, int x3, int y3)
+{
+	return abs((x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0);
+}
+
+bool j1Render::IsInside(int x1, int y1, int x2, int y2, int x3, int y3, int x, int y)
+{
+	float A = Area(x1, y1, x2, y2, x3, y3);
+	float A1 = Area(x, y, x2, y2, x3, y3);
+	float A2 = Area(x1, y1, x, y, x3, y3);
+	float A3 = Area(x1, y1, x2, y2, x, y);
+	return (A == A1 + A2 + A3);
+}
+
+void j1Render::DrawFilledTriangle(int x1, int y1, int x2, int y2, int x3, int y3)
+{
+	int min_x;
+	int max_x;
+	int min_y;
+	int max_y;
+	
+	//min x
+	min_x = x1;
+	if (min_x > x2) {
+		min_x = x2;
+	}
+	if (min_x > x3) {
+		min_x = x3;
+	}
+
+	//max x
+	max_x = x1;
+	if (max_x < x2) {
+		max_x = x2;
+	}
+	if (max_x < x3) {
+		max_x = x3;
+	}
+
+	//min y
+	min_y = y1;
+	if (min_y > y2) {
+		min_y = y2;
+	}
+	if (min_y > y3) {
+		min_y = y3;
+	}
+
+	//max y
+	max_y = y1;
+	if (max_y < y2) {
+		max_y = y2;
+	}
+	if (max_y < y3) {
+		max_y = y3;
+	}
+
+	for (int i = min_y; i < max_y; ++i) {
+		for (int k = min_x; k < max_x; ++k) {
+
+			if (IsInside(x1, y1, x2, y2, x3, y3, k, i)) {
+				SDL_Rect s = {k,i,1,1};
+			DrawQuad(s, 80, 50, 150, 255, true, true);
+			}
+		}
+	}
+
+
 }

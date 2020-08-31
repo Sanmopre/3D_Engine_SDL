@@ -40,12 +40,18 @@ public:
 	bool DrawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool use_camera = true) const;
 	bool DrawCircle(int x1, int y1, int redius, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool use_camera = true) const;
 	void DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3);
+	
+	float Area(int x1, int y1, int x2, int y2, int x3, int y3);
+	bool IsInside(int x1, int y1, int x2, int y2, int x3, int y3, int x, int y);
 
+	void DrawFilledTriangle(int x1, int y1, int x2, int y2, int x3, int y3);
+	
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
 
 public:
 
+	SDL_Rect unit_rect = {0,0,1,1};
 	SDL_Renderer*	renderer;
 	SDL_Rect		camera;
 	SDL_Rect		viewport;
