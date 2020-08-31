@@ -52,6 +52,7 @@ private:
 
 	void MultiplyMatrixVector(Vector3D& i, Vector3D& o, Matrix4x4& m);
 
+	float fTheta = 0;
 
 	Matrix4x4 matProj;
 

@@ -75,13 +75,46 @@ bool j1Engine3D::PreUpdate()
 bool j1Engine3D::Update(float dt)
 {
 	
+	Matrix4x4 matRotZ, matRotX;
+	fTheta += 0.0004f;
+
+	//ROT Z
+	matRotZ.m[0][0] = cosf(fTheta);
+	matRotZ.m[0][1] = sinf(fTheta);
+	matRotZ.m[1][0] = -sinf(fTheta);
+	matRotZ.m[1][1] = cosf(fTheta);
+	matRotZ.m[2][2] = 1;
+	matRotZ.m[3][3] = 1;
+
+	//ROT X
+	matRotX.m[0][0] = 1;
+	matRotX.m[1][1] = cosf(fTheta * 0.5f);
+	matRotX.m[1][2] = sinf(fTheta * 0.5f);
+	matRotX.m[2][1] = -sinf(fTheta * 0.5f);
+	matRotX.m[2][2] = cosf(fTheta * 0.5f);
+	matRotX.m[3][3] = 1;
+
 	for (auto tri : mesh_cube.tris) 
 	{
-		Triangle_s triProjected, triTranslated;
+		Triangle_s triProjected, triTranslated, triRotatedZ, triRotatedZX;
 
-		MultiplyMatrixVector(tri.vertices[0], triProjected.vertices[0], matProj);
-		MultiplyMatrixVector(tri.vertices[1], triProjected.vertices[1], matProj);
-		MultiplyMatrixVector(tri.vertices[2], triProjected.vertices[2], matProj);
+		MultiplyMatrixVector(tri.vertices[0], triRotatedZ.vertices[0], matRotZ);
+		MultiplyMatrixVector(tri.vertices[1], triRotatedZ.vertices[1], matRotZ);
+		MultiplyMatrixVector(tri.vertices[2], triRotatedZ.vertices[2], matRotZ);
+
+		MultiplyMatrixVector(triRotatedZ.vertices[0], triRotatedZX.vertices[0], matRotX);
+		MultiplyMatrixVector(triRotatedZ.vertices[1], triRotatedZX.vertices[1], matRotX);
+		MultiplyMatrixVector(triRotatedZ.vertices[2], triRotatedZX.vertices[2], matRotX);
+
+		triTranslated = triRotatedZX;
+		triTranslated.vertices[0].z = triRotatedZX.vertices[0].z + 3.0f;
+		triTranslated.vertices[1].z = triRotatedZX.vertices[1].z + 3.0f;
+		triTranslated.vertices[2].z = triRotatedZX.vertices[2].z + 3.0f;
+
+
+		MultiplyMatrixVector(triTranslated.vertices[0], triProjected.vertices[0], matProj);
+		MultiplyMatrixVector(triTranslated.vertices[1], triProjected.vertices[1], matProj);
+		MultiplyMatrixVector(triTranslated.vertices[2], triProjected.vertices[2], matProj);
 
 
 
