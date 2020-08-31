@@ -66,6 +66,8 @@ private:
 public:
 	Mesh mesh_cube;
 
+	Vector3D Camera;
+
 	Triangle_s tri;
 
 };

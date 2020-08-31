@@ -94,7 +94,7 @@ bool j1Engine3D::Update(float dt)
 	matRotX.m[2][2] = cosf(fTheta * 0.5f);
 	matRotX.m[3][3] = 1;
 
-	for (auto tri : mesh_cube.tris) 
+	for (auto tri : mesh_cube.tris)
 	{
 		Triangle_s triProjected, triTranslated, triRotatedZ, triRotatedZX;
 
@@ -112,12 +112,30 @@ bool j1Engine3D::Update(float dt)
 		triTranslated.vertices[2].z = triRotatedZX.vertices[2].z + 3.0f;
 
 
+		Vector3D normal, line1, line2;
+		line1.x = triTranslated.vertices[1].x - triTranslated.vertices[0].x;
+		line1.y = triTranslated.vertices[1].y - triTranslated.vertices[0].y;
+		line1.z = triTranslated.vertices[1].z - triTranslated.vertices[0].z;
+
+		line2.x = triTranslated.vertices[2].x - triTranslated.vertices[0].x;
+		line2.y = triTranslated.vertices[2].y - triTranslated.vertices[0].y;
+		line2.z = triTranslated.vertices[2].z - triTranslated.vertices[0].z;
+
+		normal.x = line1.y * line2.z - line1.z * line2.y;
+		normal.y = line1.z * line2.x - line1.x * line2.z;
+		normal.z = line1.x * line2.y - line1.y * line2.x;
+
+		float l = sqrtf(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
+		normal.x /= l;
+		normal.y /= l;
+		normal.z /= l;
+
+		//if (normal.z < 0) 
+		if(normal.x * (triTranslated.vertices[0].x - Camera.x) + normal.y * (triTranslated.vertices[0].y - Camera.y) + normal.z * (triTranslated.vertices[0].z - Camera.z) < 0.0f)
+		{
 		MultiplyMatrixVector(triTranslated.vertices[0], triProjected.vertices[0], matProj);
 		MultiplyMatrixVector(triTranslated.vertices[1], triProjected.vertices[1], matProj);
 		MultiplyMatrixVector(triTranslated.vertices[2], triProjected.vertices[2], matProj);
-
-
-
 
 
 		triProjected.vertices[0].x += 1.0f;
@@ -128,10 +146,6 @@ bool j1Engine3D::Update(float dt)
 
 		triProjected.vertices[2].x += 1.0f;
 		triProjected.vertices[2].y += 1.0f;
-
-
-
-
 
 		triProjected.vertices[0].x *= 0.5f * (float)App->win->width;
 		triProjected.vertices[0].y *= 0.5f * (float)App->win->height;
@@ -145,7 +159,7 @@ bool j1Engine3D::Update(float dt)
 
 
 		App->render->DrawTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y);
-
+	}
 	}
 
 
