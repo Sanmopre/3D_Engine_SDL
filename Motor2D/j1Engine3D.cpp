@@ -77,11 +77,39 @@ bool j1Engine3D::Update(float dt)
 	
 	for (auto tri : mesh_cube.tris) 
 	{
-		Triangle_s triProjected;
+		Triangle_s triProjected, triTranslated;
 
 		MultiplyMatrixVector(tri.vertices[0], triProjected.vertices[0], matProj);
 		MultiplyMatrixVector(tri.vertices[1], triProjected.vertices[1], matProj);
 		MultiplyMatrixVector(tri.vertices[2], triProjected.vertices[2], matProj);
+
+
+
+
+
+		triProjected.vertices[0].x += 1.0f;
+		triProjected.vertices[0].y += 1.0f;
+
+		triProjected.vertices[1].x += 1.0f;
+		triProjected.vertices[1].y += 1.0f;
+
+		triProjected.vertices[2].x += 1.0f;
+		triProjected.vertices[2].y += 1.0f;
+
+
+
+
+
+		triProjected.vertices[0].x *= 0.5f * (float)App->win->width;
+		triProjected.vertices[0].y *= 0.5f * (float)App->win->height;
+
+		triProjected.vertices[1].x *= 0.5f * (float)App->win->width;
+		triProjected.vertices[1].y *= 0.5f * (float)App->win->height;
+
+		triProjected.vertices[2].x *= 0.5f * (float)App->win->width;
+		triProjected.vertices[2].y *= 0.5f * (float)App->win->height;
+
+
 
 		App->render->DrawTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y);
 
