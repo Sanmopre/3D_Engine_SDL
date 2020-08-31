@@ -245,3 +245,10 @@ bool j1Render::DrawCircle(int x, int y, int radius, Uint8 r, Uint8 g, Uint8 b, U
 
 	return ret;
 }
+
+void j1Render::DrawTriangle(int x1, int y1, int x2, int y2, int x3, int y3)
+{
+	DrawLine(x1,y1,x2,y2,200, 200, 200, 100, true);
+	DrawLine(x2, y2, x3, y3, 200, 200, 200, 100, true);
+	DrawLine(x3, y3, x1, y1, 200, 200, 200, 100, true);
+}

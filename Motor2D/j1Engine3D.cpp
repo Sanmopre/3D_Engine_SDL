@@ -112,6 +112,8 @@ bool j1Engine3D::Update(float dt)
 		triProjected.p[2].y *= 0.5f * (float)ScreenHeight();
 	}
 */
+
+	App->render->DrawTriangle(0, 0, 100, 100, 180, 20);
 	return true;
 }
 
