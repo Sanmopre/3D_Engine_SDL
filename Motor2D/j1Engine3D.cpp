@@ -6,6 +6,7 @@
 #include "j1Render.h"
 #include "j1Window.h"
 #include "j1Engine3D.h"
+#include <algorithm>
 
 j1Engine3D::j1Engine3D() : j1Module()
 {
@@ -98,6 +99,8 @@ bool j1Engine3D::Update(float dt)
 	matRotX.m[2][2] = cosf(fTheta * 0.5f);
 	matRotX.m[3][3] = 1;
 
+	vector<Triangle_s> TrianglesToDraw;
+	vector<float> ShaderValue;
 	for (auto tri : mesh_cube.tris)
 	{
 		Triangle_s triProjected, triTranslated, triRotatedZ, triRotatedZX;
@@ -147,6 +150,7 @@ bool j1Engine3D::Update(float dt)
 		float dp = normal.x * light.x + normal.y * light.y + normal.z * light.z;
 
 		float light_value = dp * 255;
+		ShaderValue.push_back(light_value);
 
 		MultiplyMatrixVector(triTranslated.vertices[0], triProjected.vertices[0], matProj);
 		MultiplyMatrixVector(triTranslated.vertices[1], triProjected.vertices[1], matProj);
@@ -171,13 +175,21 @@ bool j1Engine3D::Update(float dt)
 		triProjected.vertices[2].x *= 0.5f * (float)App->win->width;
 		triProjected.vertices[2].y *= 0.5f * (float)App->win->height;
 
-
+		TrianglesToDraw.push_back(triProjected);
 
 		//App->render->DrawTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y);
-	App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, light_value);
+	//App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, light_value);
 		}
 	}
 
+	sort(TrianglesToDraw.begin(), TrianglesToDraw.end(), [](Triangle_s& t1, Triangle_s& t2) {
+
+
+		});
+
+	for (auto& triProjected : TrianglesToDraw) {
+		App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, light_value);
+	}
 
 	return true;
 }
