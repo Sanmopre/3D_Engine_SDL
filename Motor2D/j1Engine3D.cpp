@@ -149,8 +149,6 @@ bool j1Engine3D::Update(float dt)
 
 		float dp = normal.x * light.x + normal.y * light.y + normal.z * light.z;
 
-		float light_value = dp * 255;
-		ShaderValue.push_back(light_value);
 
 		MultiplyMatrixVector(triTranslated.vertices[0], triProjected.vertices[0], matProj);
 		MultiplyMatrixVector(triTranslated.vertices[1], triProjected.vertices[1], matProj);
@@ -178,19 +176,24 @@ bool j1Engine3D::Update(float dt)
 		TrianglesToDraw.push_back(triProjected);
 
 		//App->render->DrawTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y);
-	//App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, light_value);
+	App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, dp);
 		}
 	}
 
+	/*
 	sort(TrianglesToDraw.begin(), TrianglesToDraw.end(), [](Triangle_s& t1, Triangle_s& t2) {
 
+		float z1 = (t1.vertices[0].z + t1.vertices[1].z + t1.vertices[2].z) / 3.0f;
+		float z2 = (t2.vertices[0].z + t2.vertices[1].z + t2.vertices[2].z) / 3.0f;
 
+		return z1 > z2;
 		});
 
-	for (auto& triProjected : TrianglesToDraw) {
-		App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, light_value);
-	}
 
+	for (auto& triProjected : TrianglesToDraw) {
+		App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, 200);
+	}
+*/
 	return true;
 }
 

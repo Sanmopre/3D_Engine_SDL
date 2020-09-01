@@ -44,7 +44,7 @@ public:
 	float Area(int x1, int y1, int x2, int y2, int x3, int y3);
 	bool IsInside(int x1, int y1, int x2, int y2, int x3, int y3, int x, int y);
 
-	void DrawFilledTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Uint8 a = 255);
+	void DrawFilledTriangle(int x1, int y1, int x2, int y2, int x3, int y3, float a);
 	
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);

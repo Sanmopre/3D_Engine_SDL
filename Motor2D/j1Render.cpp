@@ -268,7 +268,7 @@ bool j1Render::IsInside(int x1, int y1, int x2, int y2, int x3, int y3, int x, i
 	return (A == A1 + A2 + A3);
 }
 
-void j1Render::DrawFilledTriangle(int x1, int y1, int x2, int y2, int x3, int y3, Uint8 a)
+void j1Render::DrawFilledTriangle(int x1, int y1, int x2, int y2, int x3, int y3, float a)
 {
 	int min_x;
 	int max_x;
@@ -316,7 +316,7 @@ void j1Render::DrawFilledTriangle(int x1, int y1, int x2, int y2, int x3, int y3
 
 			if (IsInside(x1, y1, x2, y2, x3, y3, k, i)) {
 				SDL_Rect s = {k,i,1,1};
-			DrawQuad(s, 80, 50, 150, a, true, true);
+			DrawQuad(s, 0, a*128, a*255, 255, true, true);
 			}
 		}
 	}
