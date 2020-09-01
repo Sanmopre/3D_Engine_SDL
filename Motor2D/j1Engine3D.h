@@ -16,6 +16,7 @@ struct Vector3D {
 
 struct Triangle_s {
 	Vector3D vertices[3];
+	float shader_value;
 };
 
 struct Mesh {
