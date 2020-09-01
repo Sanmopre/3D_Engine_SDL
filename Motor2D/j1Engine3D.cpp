@@ -27,7 +27,7 @@ bool j1Engine3D::Awake()
 
 bool j1Engine3D::Start()
 {
-	mesh_cube.tris = {
+	/*mesh_cube.tris = {
 		// SOUTH
 			{ 0.0f, 0.0f, 0.0f,    0.0f, 1.0f, 0.0f,    1.0f, 1.0f, 0.0f },
 			{ 0.0f, 0.0f, 0.0f,    1.0f, 1.0f, 0.0f,    1.0f, 0.0f, 0.0f },
@@ -51,7 +51,9 @@ bool j1Engine3D::Start()
 			// BOTTOM                                                    
 			{ 1.0f, 0.0f, 1.0f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f, 0.0f },
 			{ 1.0f, 0.0f, 1.0f,    0.0f, 0.0f, 0.0f,    1.0f, 0.0f, 0.0f },
-	};
+	};*/
+
+	mesh_cube.LoadFromObjectFile("pot.obj");
 
 
 	matProj.m[0][0] = fAspectRatio * fFovRad;
@@ -109,9 +111,9 @@ bool j1Engine3D::Update(float dt)
 		MultiplyMatrixVector(triRotatedZ.vertices[2], triRotatedZX.vertices[2], matRotX);
 
 		triTranslated = triRotatedZX;
-		triTranslated.vertices[0].z = triRotatedZX.vertices[0].z + 3.0f;
-		triTranslated.vertices[1].z = triRotatedZX.vertices[1].z + 3.0f;
-		triTranslated.vertices[2].z = triRotatedZX.vertices[2].z + 3.0f;
+		triTranslated.vertices[0].z = triRotatedZX.vertices[0].z + 99.0f;
+		triTranslated.vertices[1].z = triRotatedZX.vertices[1].z + 99.0f;
+		triTranslated.vertices[2].z = triRotatedZX.vertices[2].z + 99.0f;
 
 
 		Vector3D normal, line1, line2;

@@ -3,6 +3,8 @@
 
 #include "j1Module.h"
 #include <vector>
+#include <fstream>
+#include <strstream>
 #include "p2DynArray.h"
 using namespace std;
 
@@ -18,6 +20,42 @@ struct Triangle_s {
 
 struct Mesh {
 	vector<Triangle_s> tris;
+
+	bool LoadFromObjectFile(string sFilename) 
+	{
+		ifstream f(sFilename);
+		if (!f.is_open())
+			return false;
+
+		vector<Vector3D> verts;
+		
+		while (!f.eof())
+		{
+			char line[128];
+			f.getline(line, 128);
+
+			strstream s;
+			s << line;
+
+			char letter;
+
+			if (line[0] == 'v') {
+				Vector3D v;
+				s >> letter >> v.x >> v.y >> v.z;
+				verts.push_back(v);
+			}
+
+			if (line[0] == 'f') {
+				int f[3];
+				s >> letter >> f[0] >> f[1] >> f[2];
+				tris.push_back({ verts[f[0] - 1], verts[f[1] - 1], verts[f[2] - 1] });
+			}
+
+		}
+
+		return true;
+	}
+
 };
 
 struct Matrix4x4 {
