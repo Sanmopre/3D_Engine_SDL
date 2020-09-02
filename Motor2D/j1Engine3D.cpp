@@ -137,7 +137,6 @@ bool j1Engine3D::Update(float dt)
 		normal.y /= l;
 		normal.z /= l;
 
-		//if (normal.z < 0) 
 		if(normal.x * (triTranslated.vertices[0].x - Camera.x) + normal.y * (triTranslated.vertices[0].y - Camera.y) + normal.z * (triTranslated.vertices[0].z - Camera.z) < 0.0f)
 		{
 			
@@ -178,6 +177,9 @@ bool j1Engine3D::Update(float dt)
 
 		//App->render->DrawTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y);
 	//App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, dp);
+		
+		//App->render->DrawTriangle(30, 10, 80, 100, 120, 10);
+		//App->render->DrawFilledTriangle(30, 10, 80, 100, 120, 10,1);
 		}
 	}
 

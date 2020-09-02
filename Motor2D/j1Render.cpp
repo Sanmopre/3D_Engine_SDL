@@ -311,15 +311,40 @@ void j1Render::DrawFilledTriangle(int x1, int y1, int x2, int y2, int x3, int y3
 		max_y = y3;
 	}
 
-	for (int i = min_y; i < max_y; ++i) {
-		for (int k = min_x; k < max_x; ++k) {
+
+
+		for (int k = min_x; k <= max_x; ++k) {
+			int first_y = 0;
+			int last_y = 0;
+			bool in_triangle = false;
+			bool first_time = true;
+			for (int i = min_y; i <= max_y; ++i) {
 
 			if (IsInside(x1, y1, x2, y2, x3, y3, k, i)) {
-				SDL_Rect s = {k,i,1,1};
-			DrawQuad(s, 0, a*128, a*255, 255, true, true);
+				if (in_triangle == false) {
+					first_y = i;
+					in_triangle = true;
+				}
 			}
-		} 
-	}
+			else {
+				if (in_triangle == true && first_time == true) {
+					last_y = i - 1;
+					first_time = false;
+				}
+			}
 
+			if (i == max_y && IsInside(x1, y1, x2, y2, x3, y3, k, i)) {
+				last_y = i;
+			}
+
+
+			}
+				DrawLine(k, first_y, k, last_y, 0, a * 128, a * 255, 255, true);
+			}
+		
+		
 
 }
+
+
+
