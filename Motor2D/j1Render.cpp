@@ -399,8 +399,8 @@ void j1Render::DrawTriangleLowRes(int res, int x1, int y1, int x2, int y2, int x
 	min_y /= res;
 	max_y /= res;
 
-	for (int k = min_x; k <= max_x; k = k + res) {
-		for (int i = min_y; i <= max_y; i = i + res) {
+	for (int k = min_x + res/2; k <= max_x; k = k + res) {
+		for (int i = min_y + res / 2; i <= max_y; i = i + res) {
 			if (IsInside(x1/res, y1/ res, x2/ res, y2/ res, x3/ res, y3/ res, k, i)) {
 				DrawQuad({ k * res,i * res,res * res,res * res }, 0, a * 128, a * 255, 255, true, false);
 			}
