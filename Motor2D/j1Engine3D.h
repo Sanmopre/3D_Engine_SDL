@@ -11,7 +11,7 @@ using namespace std;
 
 
 struct Vector3D {
-	float x, y, z;
+	float x, y, z, w;
 };
 
 struct Triangle_s {
@@ -89,7 +89,25 @@ public:
 
 private:
 
-	void MultiplyMatrixVector(Vector3D& i, Vector3D& o, Matrix4x4& m);
+	Vector3D MultiplyMatrixVector(Matrix4x4& m, Vector3D& i);
+	Matrix4x4 Matrix_MakeIdentity();
+	Matrix4x4 Matrix_MakeRotationX(float fAngleRad);
+	Matrix4x4 Matrix_MakeRotationY(float fAngleRad);
+	Matrix4x4 Matrix_MakeRotationZ(float fAngleRad);
+	Matrix4x4 Matrix_MakeTranslation(float x, float y, float z);
+	Matrix4x4 Matrix_MakeProjection(float fFovDegrees, float fAspectRatio, float fNear, float fFar);
+	Matrix4x4 Matrix_MultiplyMatrix(Matrix4x4& m1, Matrix4x4& m2);
+	Matrix4x4 Matrix_PointAt(Vector3D& pos, Vector3D& target, Vector3D& up);
+	Matrix4x4 Matrix_QuickInverse(Matrix4x4& m);
+	Vector3D Vector_Add(Vector3D& v1, Vector3D& v2);
+	Vector3D Vector_Sub(Vector3D& v1, Vector3D& v2);
+	Vector3D Vector_Mul(Vector3D& v1, float k);
+	Vector3D Vector_Div(Vector3D& v1, float k);
+	float Vector_DotProduct(Vector3D& v1, Vector3D& v2);
+	float Vector_Length(Vector3D& v);
+	Vector3D Vector_Normalise(Vector3D& v);
+	Vector3D Vector_CrossProduct(Vector3D& v1, Vector3D& v2);
+	Vector3D Vector_IntersectPlane(Vector3D& plane_p, Vector3D& plane_n, Vector3D& lineStart, Vector3D& lineEnd);
 
 	float fTheta = 0;
 

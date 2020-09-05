@@ -28,43 +28,10 @@ bool j1Engine3D::Awake()
 
 bool j1Engine3D::Start()
 {
-	/*mesh_cube.tris = {
-		// SOUTH
-			{ 0.0f, 0.0f, 0.0f,    0.0f, 1.0f, 0.0f,    1.0f, 1.0f, 0.0f },
-			{ 0.0f, 0.0f, 0.0f,    1.0f, 1.0f, 0.0f,    1.0f, 0.0f, 0.0f },
-
-			// EAST                                                      
-			{ 1.0f, 0.0f, 0.0f,    1.0f, 1.0f, 0.0f,    1.0f, 1.0f, 1.0f },
-			{ 1.0f, 0.0f, 0.0f,    1.0f, 1.0f, 1.0f,    1.0f, 0.0f, 1.0f },
-
-			// NORTH                                                     
-			{ 1.0f, 0.0f, 1.0f,    1.0f, 1.0f, 1.0f,    0.0f, 1.0f, 1.0f },
-			{ 1.0f, 0.0f, 1.0f,    0.0f, 1.0f, 1.0f,    0.0f, 0.0f, 1.0f },
-
-			// WEST                                                      
-			{ 0.0f, 0.0f, 1.0f,    0.0f, 1.0f, 1.0f,    0.0f, 1.0f, 0.0f },
-			{ 0.0f, 0.0f, 1.0f,    0.0f, 1.0f, 0.0f,    0.0f, 0.0f, 0.0f },
-
-			// TOP                                                       
-			{ 0.0f, 1.0f, 0.0f,    0.0f, 1.0f, 1.0f,    1.0f, 1.0f, 1.0f },
-			{ 0.0f, 1.0f, 0.0f,    1.0f, 1.0f, 1.0f,    1.0f, 1.0f, 0.0f },
-
-			// BOTTOM                                                    
-			{ 1.0f, 0.0f, 1.0f,    0.0f, 0.0f, 1.0f,    0.0f, 0.0f, 0.0f },
-			{ 1.0f, 0.0f, 1.0f,    0.0f, 0.0f, 0.0f,    1.0f, 0.0f, 0.0f },
-	};*/
 
 	mesh_cube.LoadFromObjectFile("pot.obj");
 
-
-	matProj.m[0][0] = fAspectRatio * fFovRad;
-	matProj.m[1][1] = fFovRad;
-	matProj.m[2][2] = fFar / (fFar - fNear);
-	matProj.m[3][2] = (-fFar * fNear) / (fFar - fNear);
-	matProj.m[2][3] = 1.0f;
-	matProj.m[3][3] = 0.0f;
-
-
+	matProj = Matrix_MakeProjection(90.0f, (float)App->win->height / (float)App->win->width, 0.1f, 1000.0f);
 	return true;
 }
 
@@ -83,61 +50,50 @@ bool j1Engine3D::Update(float dt)
 	Matrix4x4 matRotZ, matRotX;
 	fTheta += 0.02f;
 
-	//ROT Z
-	matRotZ.m[0][0] = cosf(fTheta);
-	matRotZ.m[0][1] = sinf(fTheta);
-	matRotZ.m[1][0] = -sinf(fTheta);
-	matRotZ.m[1][1] = cosf(fTheta);
-	matRotZ.m[2][2] = 1;
-	matRotZ.m[3][3] = 1;
+	matRotZ = Matrix_MakeRotationZ(fTheta * 0.5f);
+	matRotX = Matrix_MakeRotationX(fTheta);
 
-	//ROT X
-	matRotX.m[0][0] = 1;
-	matRotX.m[1][1] = cosf(fTheta * 0.5f);
-	matRotX.m[1][2] = sinf(fTheta * 0.5f);
-	matRotX.m[2][1] = -sinf(fTheta * 0.5f);
-	matRotX.m[2][2] = cosf(fTheta * 0.5f);
-	matRotX.m[3][3] = 1;
+	Matrix4x4 matTrans;
+	matTrans = Matrix_MakeTranslation(0.0f, 0.0f, 5.0f);
+
+	Matrix4x4 matWorld;
+	matWorld = Matrix_MakeIdentity();	// Form World Matrix
+	matWorld = Matrix_MultiplyMatrix(matRotZ, matRotX); // Transform by rotation
+	matWorld = Matrix_MultiplyMatrix(matWorld, matTrans); // Transform by translation
+
 
 	vector<Triangle_s> TrianglesToDraw;
 	vector<float> ShaderValue;
 	for (auto tri : mesh_cube.tris)
 	{
-		Triangle_s triProjected, triTranslated, triRotatedZ, triRotatedZX;
+		Triangle_s triProjected, triTransformed;
 
-		MultiplyMatrixVector(tri.vertices[0], triRotatedZ.vertices[0], matRotZ);
-		MultiplyMatrixVector(tri.vertices[1], triRotatedZ.vertices[1], matRotZ);
-		MultiplyMatrixVector(tri.vertices[2], triRotatedZ.vertices[2], matRotZ);
-
-		MultiplyMatrixVector(triRotatedZ.vertices[0], triRotatedZX.vertices[0], matRotX);
-		MultiplyMatrixVector(triRotatedZ.vertices[1], triRotatedZX.vertices[1], matRotX);
-		MultiplyMatrixVector(triRotatedZ.vertices[2], triRotatedZX.vertices[2], matRotX);
-
-		triTranslated = triRotatedZX;
-		triTranslated.vertices[0].z = triRotatedZX.vertices[0].z + 99.0f;
-		triTranslated.vertices[1].z = triRotatedZX.vertices[1].z + 99.0f;
-		triTranslated.vertices[2].z = triRotatedZX.vertices[2].z + 99.0f;
+		// World Matrix Transform
+		triTransformed.p[0] = MultiplyMatrixVector(matWorld, tri.vertices[0]);
+		triTransformed.p[1] = MultiplyMatrixVector(matWorld, tri.vertices[1]);
+		triTransformed.p[2] = MultiplyMatrixVector(matWorld, tri.vertices[2]);
 
 
+		// Calculate triangle Normal
 		Vector3D normal, line1, line2;
-		line1.x = triTranslated.vertices[1].x - triTranslated.vertices[0].x;
-		line1.y = triTranslated.vertices[1].y - triTranslated.vertices[0].y;
-		line1.z = triTranslated.vertices[1].z - triTranslated.vertices[0].z;
 
-		line2.x = triTranslated.vertices[2].x - triTranslated.vertices[0].x;
-		line2.y = triTranslated.vertices[2].y - triTranslated.vertices[0].y;
-		line2.z = triTranslated.vertices[2].z - triTranslated.vertices[0].z;
+		// Get lines either side of triangle
+		line1 = Vector_Sub(triTransformed.p[1], triTransformed.p[0]);
+		line2 = Vector_Sub(triTransformed.p[2], triTransformed.p[0]);
 
-		normal.x = line1.y * line2.z - line1.z * line2.y;
-		normal.y = line1.z * line2.x - line1.x * line2.z;
-		normal.z = line1.x * line2.y - line1.y * line2.x;
+		// Take cross product of lines to get normal to triangle surface
+		normal = Vector_CrossProduct(line1, line2);
 
 		float l = sqrtf(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
 		normal.x /= l;
 		normal.y /= l;
 		normal.z /= l;
 
-		if(normal.x * (triTranslated.vertices[0].x - Camera.x) + normal.y * (triTranslated.vertices[0].y - Camera.y) + normal.z * (triTranslated.vertices[0].z - Camera.z) < 0.0f)
+		// Get Ray from triangle to camera
+		Vector3D vCameraRay = Vector_Sub(triTransformed.p[0], vCamera);
+
+		// If ray is aligned with normal, then triangle is visible
+		if (Vector_DotProduct(normal, vCameraRay) < 0.0f)
 		{
 			
 		Vector3D light = { 0.0f, 0.0f, -1.0f };
@@ -210,15 +166,191 @@ bool j1Engine3D::CleanUp()
 	return true;
 }
 
-void j1Engine3D::MultiplyMatrixVector(Vector3D& i, Vector3D& o, Matrix4x4& m)
+Vector3D j1Engine3D::MultiplyMatrixVector(Matrix4x4& m, Vector3D& i)
 {
-	o.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + m.m[3][0];
-	o.y = i.x * m.m[0][1] + i.y * m.m[1][1] + i.z * m.m[2][1] + m.m[3][1];
-	o.z = i.x * m.m[0][2] + i.y * m.m[1][2] + i.z * m.m[2][2] + m.m[3][2];
-	float w = i.x * m.m[0][3] + i.y * m.m[1][3] + i.z * m.m[2][3] + m.m[3][3];
+	Vector3D v;
+	v.x = i.x * m.m[0][0] + i.y * m.m[1][0] + i.z * m.m[2][0] + i.w * m.m[3][0];
+	v.y = i.x * m.m[0][1] + i.y * m.m[1][1] + i.z * m.m[2][1] + i.w * m.m[3][1];
+	v.z = i.x * m.m[0][2] + i.y * m.m[1][2] + i.z * m.m[2][2] + i.w * m.m[3][2];
+	v.w = i.x * m.m[0][3] + i.y * m.m[1][3] + i.z * m.m[2][3] + i.w * m.m[3][3];
+	return v;
+}
 
-	if (w != 0.0f)
-	{
-		o.x /= w; o.y /= w; o.z /= w;
-	}
+
+Matrix4x4 j1Engine3D::Matrix_MakeIdentity()
+{
+	Matrix4x4 matrix;
+	matrix.m[0][0] = 1.0f;
+	matrix.m[1][1] = 1.0f;
+	matrix.m[2][2] = 1.0f;
+	matrix.m[3][3] = 1.0f;
+	return matrix;
+}
+
+Matrix4x4 j1Engine3D::Matrix_MakeRotationX(float fAngleRad)
+{
+	Matrix4x4 matrix;
+	matrix.m[0][0] = 1.0f;
+	matrix.m[1][1] = cosf(fAngleRad);
+	matrix.m[1][2] = sinf(fAngleRad);
+	matrix.m[2][1] = -sinf(fAngleRad);
+	matrix.m[2][2] = cosf(fAngleRad);
+	matrix.m[3][3] = 1.0f;
+	return matrix;
+}
+
+Matrix4x4 j1Engine3D::Matrix_MakeRotationY(float fAngleRad)
+{
+	Matrix4x4 matrix;
+	matrix.m[0][0] = cosf(fAngleRad);
+	matrix.m[0][2] = sinf(fAngleRad);
+	matrix.m[2][0] = -sinf(fAngleRad);
+	matrix.m[1][1] = 1.0f;
+	matrix.m[2][2] = cosf(fAngleRad);
+	matrix.m[3][3] = 1.0f;
+	return matrix;
+}
+
+Matrix4x4 j1Engine3D::Matrix_MakeRotationZ(float fAngleRad)
+{
+	Matrix4x4 matrix;
+	matrix.m[0][0] = cosf(fAngleRad);
+	matrix.m[0][1] = sinf(fAngleRad);
+	matrix.m[1][0] = -sinf(fAngleRad);
+	matrix.m[1][1] = cosf(fAngleRad);
+	matrix.m[2][2] = 1.0f;
+	matrix.m[3][3] = 1.0f;
+	return matrix;
+}
+
+Matrix4x4 j1Engine3D::Matrix_MakeTranslation(float x, float y, float z)
+{
+	Matrix4x4 matrix;
+	matrix.m[0][0] = 1.0f;
+	matrix.m[1][1] = 1.0f;
+	matrix.m[2][2] = 1.0f;
+	matrix.m[3][3] = 1.0f;
+	matrix.m[3][0] = x;
+	matrix.m[3][1] = y;
+	matrix.m[3][2] = z;
+	return matrix;
+}
+
+Matrix4x4 j1Engine3D::Matrix_MakeProjection(float fFovDegrees, float fAspectRatio, float fNear, float fFar)
+{
+	float fFovRad = 1.0f / tanf(fFovDegrees * 0.5f / 180.0f * 3.14159f);
+	Matrix4x4 matrix;
+	matrix.m[0][0] = fAspectRatio * fFovRad;
+	matrix.m[1][1] = fFovRad;
+	matrix.m[2][2] = fFar / (fFar - fNear);
+	matrix.m[3][2] = (-fFar * fNear) / (fFar - fNear);
+	matrix.m[2][3] = 1.0f;
+	matrix.m[3][3] = 0.0f;
+	return matrix;
+}
+
+Matrix4x4 j1Engine3D::Matrix_MultiplyMatrix(Matrix4x4& m1, Matrix4x4& m2)
+{
+	Matrix4x4 matrix;
+	for (int c = 0; c < 4; c++)
+		for (int r = 0; r < 4; r++)
+			matrix.m[r][c] = m1.m[r][0] * m2.m[0][c] + m1.m[r][1] * m2.m[1][c] + m1.m[r][2] * m2.m[2][c] + m1.m[r][3] * m2.m[3][c];
+	return matrix;
+}
+
+Matrix4x4 j1Engine3D::Matrix_PointAt(Vector3D& pos, Vector3D& target, Vector3D& up)
+{
+	// Calculate new forward direction
+	Vector3D newForward = Vector_Sub(target, pos);
+	newForward = Vector_Normalise(newForward);
+
+	// Calculate new Up direction
+	Vector3D a = Vector_Mul(newForward, Vector_DotProduct(up, newForward));
+	Vector3D newUp = Vector_Sub(up, a);
+	newUp = Vector_Normalise(newUp);
+
+	// New Right direction is easy, its just cross product
+	Vector3D newRight = Vector_CrossProduct(newUp, newForward);
+
+	// Construct Dimensioning and Translation Matrix	
+	Matrix4x4 matrix;
+	matrix.m[0][0] = newRight.x;	matrix.m[0][1] = newRight.y;	matrix.m[0][2] = newRight.z;	matrix.m[0][3] = 0.0f;
+	matrix.m[1][0] = newUp.x;		matrix.m[1][1] = newUp.y;		matrix.m[1][2] = newUp.z;		matrix.m[1][3] = 0.0f;
+	matrix.m[2][0] = newForward.x;	matrix.m[2][1] = newForward.y;	matrix.m[2][2] = newForward.z;	matrix.m[2][3] = 0.0f;
+	matrix.m[3][0] = pos.x;			matrix.m[3][1] = pos.y;			matrix.m[3][2] = pos.z;			matrix.m[3][3] = 1.0f;
+	return matrix;
+
+}
+
+Matrix4x4 j1Engine3D::Matrix_QuickInverse(Matrix4x4& m)
+{
+	Matrix4x4 matrix;
+	matrix.m[0][0] = m.m[0][0]; matrix.m[0][1] = m.m[1][0]; matrix.m[0][2] = m.m[2][0]; matrix.m[0][3] = 0.0f;
+	matrix.m[1][0] = m.m[0][1]; matrix.m[1][1] = m.m[1][1]; matrix.m[1][2] = m.m[2][1]; matrix.m[1][3] = 0.0f;
+	matrix.m[2][0] = m.m[0][2]; matrix.m[2][1] = m.m[1][2]; matrix.m[2][2] = m.m[2][2]; matrix.m[2][3] = 0.0f;
+	matrix.m[3][0] = -(m.m[3][0] * matrix.m[0][0] + m.m[3][1] * matrix.m[1][0] + m.m[3][2] * matrix.m[2][0]);
+	matrix.m[3][1] = -(m.m[3][0] * matrix.m[0][1] + m.m[3][1] * matrix.m[1][1] + m.m[3][2] * matrix.m[2][1]);
+	matrix.m[3][2] = -(m.m[3][0] * matrix.m[0][2] + m.m[3][1] * matrix.m[1][2] + m.m[3][2] * matrix.m[2][2]);
+	matrix.m[3][3] = 1.0f;
+	return matrix;
+}
+
+
+
+
+Vector3D j1Engine3D::Vector_Add(Vector3D& v1, Vector3D& v2)
+{
+	return { v1.x + v2.x, v1.y + v2.y, v1.z + v2.z };
+}
+
+Vector3D j1Engine3D::Vector_Sub(Vector3D& v1, Vector3D& v2)
+{
+	return { v1.x - v2.x, v1.y - v2.y, v1.z - v2.z };
+}
+
+Vector3D j1Engine3D::Vector_Mul(Vector3D& v1, float k)
+{
+	return { v1.x * k, v1.y * k, v1.z * k };
+}
+
+Vector3D j1Engine3D::Vector_Div(Vector3D& v1, float k)
+{
+	return { v1.x / k, v1.y / k, v1.z / k };
+}
+
+float j1Engine3D::Vector_DotProduct(Vector3D& v1, Vector3D& v2)
+{
+	return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
+}
+
+float j1Engine3D::Vector_Length(Vector3D& v)
+{
+	return sqrtf(Vector_DotProduct(v, v));
+}
+
+Vector3D j1Engine3D::Vector_Normalise(Vector3D& v)
+{
+	float l = Vector_Length(v);
+	return { v.x / l, v.y / l, v.z / l };
+}
+
+Vector3D j1Engine3D::Vector_CrossProduct(Vector3D& v1, Vector3D& v2)
+{
+	Vector3D v;
+	v.x = v1.y * v2.z - v1.z * v2.y;
+	v.y = v1.z * v2.x - v1.x * v2.z;
+	v.z = v1.x * v2.y - v1.y * v2.x;
+	return v;
+}
+
+Vector3D j1Engine3D::Vector_IntersectPlane(Vector3D& plane_p, Vector3D& plane_n, Vector3D& lineStart, Vector3D& lineEnd)
+{
+	plane_n = Vector_Normalise(plane_n);
+	float plane_d = -Vector_DotProduct(plane_n, plane_p);
+	float ad = Vector_DotProduct(lineStart, plane_n);
+	float bd = Vector_DotProduct(lineEnd, plane_n);
+	float t = (-plane_d - ad) / (bd - ad);
+	Vector3D lineStartToEnd = Vector_Sub(lineEnd, lineStart);
+	Vector3D lineToIntersect = Vector_Mul(lineStartToEnd, t);
+	return Vector_Add(lineStart, lineToIntersect);
 }
