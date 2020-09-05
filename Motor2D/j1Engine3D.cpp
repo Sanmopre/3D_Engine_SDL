@@ -176,7 +176,7 @@ bool j1Engine3D::Update(float dt)
 		TrianglesToDraw.push_back(triProjected);
 
 		//App->render->DrawTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y);
-	//App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, dp);
+		//App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, dp);
 		
 		//App->render->DrawTriangle(30, 10, 80, 100, 120, 10);
 		//App->render->DrawFilledTriangle(30, 10, 80, 100, 120, 10,1);
