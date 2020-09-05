@@ -3,6 +3,7 @@
 #include "j1App.h"
 #include "j1Window.h"
 #include "j1Render.h"
+#include "j1Engine3D.h"
 
 
 #define VSYNC true
@@ -58,6 +59,9 @@ bool j1Render::Start()
 	LOG("render start");
 	// back background
 	SDL_RenderGetViewport(renderer, &viewport);
+
+	rect = { 0,0,App->engine->resolution,App->engine->resolution };
+
 	return true;
 }
 
@@ -344,6 +348,64 @@ void j1Render::DrawFilledTriangle(int x1, int y1, int x2, int y2, int x3, int y3
 		
 		
 
+}
+
+void j1Render::DrawTriangleLowRes(int res, int x1, int y1, int x2, int y2, int x3, int y3, float a)
+{
+	int min_x;
+	int max_x;
+	int min_y;
+	int max_y;
+
+	//min x
+	min_x = x1;
+	if (min_x > x2) {
+		min_x = x2;
+	}
+	if (min_x > x3) {
+		min_x = x3;
+	}
+
+	//max x
+	max_x = x1;
+	if (max_x < x2) {
+		max_x = x2;
+	}
+	if (max_x < x3) {
+		max_x = x3;
+	}
+
+	//min y
+	min_y = y1;
+	if (min_y > y2) {
+		min_y = y2;
+	}
+	if (min_y > y3) {
+		min_y = y3;
+	}
+
+	//max y
+	max_y = y1;
+	if (max_y < y2) {
+		max_y = y2;
+	}
+	if (max_y < y3) {
+		max_y = y3;
+	}
+
+	
+	min_x /= res; 
+	max_x /= res;
+	min_y /= res;
+	max_y /= res;
+
+	for (int k = min_x; k <= max_x; k = k + res) {
+		for (int i = min_y; i <= max_y; i = i + res) {
+			if (IsInside(x1/res, y1/ res, x2/ res, y2/ res, x3/ res, y3/ res, k, i)) {
+				DrawQuad({ k * res,i * res,res * res,res * res }, 0, a * 128, a * 255, 255, true, false);
+			}
+		}
+	}
 }
 
 

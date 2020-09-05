@@ -179,6 +179,7 @@ bool j1Engine3D::Update(float dt)
 		//App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, dp);
 		
 		//App->render->DrawTriangle(30, 10, 80, 100, 120, 10);
+		//App->render->DrawTriangleLowRes(resolution, 30, 10, 80, 100, 120, 10,1);
 		//App->render->DrawFilledTriangle(30, 10, 80, 100, 120, 10,1);
 		}
 	}
@@ -194,7 +195,7 @@ bool j1Engine3D::Update(float dt)
 
 
 	for (auto& triProjected : TrianglesToDraw) {
-		App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, triProjected.shader_value);
+		App->render->DrawTriangleLowRes(resolution,triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, triProjected.shader_value);
 	}
 
 	return true;

@@ -45,7 +45,8 @@ public:
 	bool IsInside(int x1, int y1, int x2, int y2, int x3, int y3, int x, int y);
 
 	void DrawFilledTriangle(int x1, int y1, int x2, int y2, int x3, int y3, float a);
-	
+	void DrawTriangleLowRes(int res, int x1, int y1, int x2, int y2, int x3, int y3, float a);
+
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
 
@@ -56,6 +57,7 @@ public:
 	SDL_Rect		camera;
 	SDL_Rect		viewport;
 	SDL_Color		background;
+	SDL_Rect		rect;
 };
 
 #endif // __j1RENDER_H__

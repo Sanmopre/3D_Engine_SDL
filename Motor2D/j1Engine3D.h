@@ -109,6 +109,8 @@ public:
 
 	Triangle_s tri;
 
+	int resolution = 2;
+
 };
 
 #endif // __j1ENGINE3D_H__
