@@ -146,6 +146,10 @@ bool j1Engine3D::Update(float dt)
 			triViewed.vertices[2] = MultiplyMatrixVector(matView, triTransformed.vertices[2]);
 
 
+			int nClippedTriangles = 0;
+			Triangle_s clipped[2];
+			nClippedTriangles = Triangle_ClipAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, triViewed, clipped[0], clipped[1]);
+
 			triProjected.vertices[0] = MultiplyMatrixVector(matProj, triViewed.vertices[0]);
 			triProjected.vertices[1] = MultiplyMatrixVector(matProj, triViewed.vertices[1]);
 			triProjected.vertices[2] = MultiplyMatrixVector(matProj, triViewed.vertices[2]);
@@ -396,3 +400,81 @@ Vector3D j1Engine3D::Vector_IntersectPlane(Vector3D& plane_p, Vector3D& plane_n,
 	Vector3D lineToIntersect = Vector_Mul(lineStartToEnd, t);
 	return Vector_Add(lineStart, lineToIntersect);
 }
+
+
+int j1Engine3D::Triangle_ClipAgainstPlane(Vector3D plane_p, Vector3D plane_n, Triangle_s& in_tri, Triangle_s& out_tri1, Triangle_s& out_tri2)
+{
+	plane_n = Vector_Normalise(plane_n);
+
+	auto dist = [&](Vector3D& p)
+	{
+		Vector3D n = Vector_Normalise(p);
+		return (plane_n.x * p.x + plane_n.y * p.y + plane_n.z * p.z - Vector_DotProduct(plane_n, plane_p));
+	};
+	
+	Vector3D* inside_points[3];  int nInsidePointCount = 0;
+	Vector3D* outside_points[3]; int nOutsidePointCount = 0;
+
+
+	float d0 = dist(in_tri.vertices[0]);
+	float d1 = dist(in_tri.vertices[1]);
+	float d2 = dist(in_tri.vertices[2]);
+
+	if (d0 >= 0) { inside_points[nInsidePointCount++] = &in_tri.vertices[0]; }
+	else { outside_points[nOutsidePointCount++] = &in_tri.vertices[0]; }
+	if (d1 >= 0) { inside_points[nInsidePointCount++] = &in_tri.vertices[1]; }
+	else { outside_points[nOutsidePointCount++] = &in_tri.vertices[1]; }
+	if (d2 >= 0) { inside_points[nInsidePointCount++] = &in_tri.vertices[2]; }
+	else { outside_points[nOutsidePointCount++] = &in_tri.vertices[2]; }
+
+
+	if (nInsidePointCount == 0)
+	{
+
+		return 0; 
+	}
+
+	if (nInsidePointCount == 3)
+	{
+
+		out_tri1 = in_tri;
+
+		return 1; 
+	}
+
+	if (nInsidePointCount == 1 && nOutsidePointCount == 2)
+	{
+
+		out_tri1.shader_value = in_tri.shader_value;
+
+
+		out_tri1.vertices[0] = *inside_points[0];
+
+		out_tri1.vertices[1] = Vector_IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[0]);
+		out_tri1.vertices[2] = Vector_IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[1]);
+
+		return 1; 
+	}
+
+	if (nInsidePointCount == 2 && nOutsidePointCount == 1)
+	{
+
+
+
+		out_tri1.shader_value = in_tri.shader_value;
+		out_tri2.shader_value = in_tri.shader_value;
+
+
+
+		out_tri1.vertices[0] = *inside_points[0];
+		out_tri1.vertices[1] = *inside_points[1];
+		out_tri1.vertices[2] = Vector_IntersectPlane(plane_p, plane_n, *inside_points[0], *outside_points[0]);
+
+
+		out_tri2.vertices[0] = *inside_points[1];
+		out_tri2.vertices[1] = out_tri1.vertices[2];
+		out_tri2.vertices[2] = Vector_IntersectPlane(plane_p, plane_n, *inside_points[1], *outside_points[0]);
+
+		return 2;
+	}
+}   

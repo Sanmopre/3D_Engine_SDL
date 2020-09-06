@@ -111,7 +111,7 @@ private:
 	Vector3D Vector_Normalise(Vector3D& v);
 	Vector3D Vector_CrossProduct(Vector3D& v1, Vector3D& v2);
 	Vector3D Vector_IntersectPlane(Vector3D& plane_p, Vector3D& plane_n, Vector3D& lineStart, Vector3D& lineEnd);
-
+	int Triangle_ClipAgainstPlane(Vector3D plane_p, Vector3D plane_n, Triangle_s& in_tri, Triangle_s& out_tri1, Triangle_s& out_tri2);
 	float fTheta = 0;
 
 	Matrix4x4 matProj;
