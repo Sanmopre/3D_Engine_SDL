@@ -69,17 +69,17 @@ bool j1Engine3D::Update(float dt)
 		Triangle_s triProjected, triTransformed;
 
 		// World Matrix Transform
-		triTransformed.p[0] = MultiplyMatrixVector(matWorld, tri.vertices[0]);
-		triTransformed.p[1] = MultiplyMatrixVector(matWorld, tri.vertices[1]);
-		triTransformed.p[2] = MultiplyMatrixVector(matWorld, tri.vertices[2]);
+		triTransformed.vertices[0] = MultiplyMatrixVector(matWorld, tri.vertices[0]);
+		triTransformed.vertices[1] = MultiplyMatrixVector(matWorld, tri.vertices[1]);
+		triTransformed.vertices[2] = MultiplyMatrixVector(matWorld, tri.vertices[2]);
 
 
 		// Calculate triangle Normal
 		Vector3D normal, line1, line2;
 
 		// Get lines either side of triangle
-		line1 = Vector_Sub(triTransformed.p[1], triTransformed.p[0]);
-		line2 = Vector_Sub(triTransformed.p[2], triTransformed.p[0]);
+		line1 = Vector_Sub(triTransformed.vertices[1], triTransformed.vertices[0]);
+		line2 = Vector_Sub(triTransformed.vertices[2], triTransformed.vertices[0]);
 
 		// Take cross product of lines to get normal to triangle surface
 		normal = Vector_CrossProduct(line1, line2);
@@ -90,34 +90,32 @@ bool j1Engine3D::Update(float dt)
 		normal.z /= l;
 
 		// Get Ray from triangle to camera
-		Vector3D vCameraRay = Vector_Sub(triTransformed.p[0], vCamera);
+		Vector3D vCameraRay = Vector_Sub(triTransformed.vertices[0], Camera);
 
 		// If ray is aligned with normal, then triangle is visible
 		if (Vector_DotProduct(normal, vCameraRay) < 0.0f)
 		{
-			
-		Vector3D light = { 0.0f, 0.0f, -1.0f };
-		float l = sqrt(light.x*light.x + light.y * light.y + light.z * light.z);
-		light.x /= l;
-		light.y /= l;
-		light.z /= l;
 
-		float dp = normal.x * light.x + normal.y * light.y + normal.z * light.z;
+			Vector3D light_direction = { 0.0f, 1.0f, -1.0f };
+			light_direction = Vector_Normalise(light_direction);
+
+			float dp = max(0.1f, Vector_DotProduct(light_direction, normal));
 
 
-		MultiplyMatrixVector(triTranslated.vertices[0], triProjected.vertices[0], matProj);
-		MultiplyMatrixVector(triTranslated.vertices[1], triProjected.vertices[1], matProj);
-		MultiplyMatrixVector(triTranslated.vertices[2], triProjected.vertices[2], matProj);
+			triProjected.vertices[0] = MultiplyMatrixVector(matProj, triTransformed.vertices[0]);
+			triProjected.vertices[1] = MultiplyMatrixVector(matProj, triTransformed.vertices[1]);
+			triProjected.vertices[2] = MultiplyMatrixVector(matProj, triTransformed.vertices[2]);
+
+			triProjected.vertices[0] = Vector_Div(triProjected.vertices[0], triProjected.vertices[0].w);
+			triProjected.vertices[1] = Vector_Div(triProjected.vertices[1], triProjected.vertices[1].w);
+			triProjected.vertices[2] = Vector_Div(triProjected.vertices[2], triProjected.vertices[2].w);
 
 
-		triProjected.vertices[0].x += 1.0f;
-		triProjected.vertices[0].y += 1.0f;
+			Vector3D vOffsetView = { 1,1,0 };
 
-		triProjected.vertices[1].x += 1.0f;
-		triProjected.vertices[1].y += 1.0f;
-
-		triProjected.vertices[2].x += 1.0f;
-		triProjected.vertices[2].y += 1.0f;
+			triProjected.vertices[0] = Vector_Add(triProjected.vertices[0], vOffsetView);
+			triProjected.vertices[1] = Vector_Add(triProjected.vertices[1], vOffsetView);
+			triProjected.vertices[2] = Vector_Add(triProjected.vertices[2], vOffsetView);
 
 		triProjected.vertices[0].x *= 0.5f * (float)App->win->width;
 		triProjected.vertices[0].y *= 0.5f * (float)App->win->height;

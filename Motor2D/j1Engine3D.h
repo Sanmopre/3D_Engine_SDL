@@ -11,7 +11,10 @@ using namespace std;
 
 
 struct Vector3D {
-	float x, y, z, w;
+	float x = 0;
+	float y = 0;
+	float z = 0;
+	float w = 1;
 };
 
 struct Triangle_s {
