@@ -58,6 +58,25 @@ bool j1Engine3D::Update(float dt)
 		Camera.x += 1;
 
 
+	Vector3D vForward = Vector_Mul(LookDir, 2.0f);
+
+
+	if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
+		Camera = Vector_Add(Camera,vForward);
+
+	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
+		Camera = Vector_Sub(Camera, vForward);
+
+
+	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
+		fYaw += 0.05f;
+
+	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+		fYaw -= 0.05f;
+
+
+
+
 	Matrix4x4 matRotZ, matRotX;
 	//fTheta += 0.02f;
 
@@ -72,9 +91,13 @@ bool j1Engine3D::Update(float dt)
 	matWorld = Matrix_MultiplyMatrix(matRotZ, matRotX); 
 	matWorld = Matrix_MultiplyMatrix(matWorld, matTrans); 
 
-	LookDir = { 0,0,1 };
+
 	Vector3D vUp = { 0,1,0 };
-	Vector3D vTarget = Vector_Add(Camera, LookDir);
+	Vector3D vTarget = {0,0,1};
+
+	Matrix4x4 matCameraRot = Matrix_MakeRotationY(fYaw);
+	LookDir = MultiplyMatrixVector(matCameraRot, vTarget);
+	vTarget = Vector_Add(Camera, LookDir);
 
 	Matrix4x4 matCamera = Matrix_PointAt(Camera, vTarget, vUp);
 	Matrix4x4 matView = Matrix_QuickInverse(matCamera);

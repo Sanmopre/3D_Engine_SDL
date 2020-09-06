@@ -128,10 +128,11 @@ public:
 
 	Vector3D Camera;
 	Vector3D LookDir;
+	float fYaw;
 
 	Triangle_s tri;
 
-	int resolution = 2;
+	int resolution = 1;
 
 };
 
