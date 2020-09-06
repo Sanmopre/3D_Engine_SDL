@@ -3,6 +3,7 @@
 
 #include "j1Module.h"
 #include <vector>
+#include <list>
 #include <fstream>
 #include <strstream>
 #include "p2DynArray.h"
@@ -132,7 +133,7 @@ public:
 
 	Triangle_s tri;
 
-	int resolution = 1;
+	int resolution = 2;
 
 };
 

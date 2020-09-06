@@ -150,33 +150,35 @@ bool j1Engine3D::Update(float dt)
 			Triangle_s clipped[2];
 			nClippedTriangles = Triangle_ClipAgainstPlane({ 0.0f, 0.0f, 0.1f }, { 0.0f, 0.0f, 1.0f }, triViewed, clipped[0], clipped[1]);
 
-			triProjected.vertices[0] = MultiplyMatrixVector(matProj, triViewed.vertices[0]);
-			triProjected.vertices[1] = MultiplyMatrixVector(matProj, triViewed.vertices[1]);
-			triProjected.vertices[2] = MultiplyMatrixVector(matProj, triViewed.vertices[2]);
+			for (int n = 0; n < nClippedTriangles; n++)
+			{
+				triProjected.vertices[0] = MultiplyMatrixVector(matProj, clipped[n].vertices[0]);
+				triProjected.vertices[1] = MultiplyMatrixVector(matProj, clipped[n].vertices[1]);
+				triProjected.vertices[2] = MultiplyMatrixVector(matProj, clipped[n].vertices[2]);
 
-			triProjected.vertices[0] = Vector_Div(triProjected.vertices[0], triProjected.vertices[0].w);
-			triProjected.vertices[1] = Vector_Div(triProjected.vertices[1], triProjected.vertices[1].w);
-			triProjected.vertices[2] = Vector_Div(triProjected.vertices[2], triProjected.vertices[2].w);
+				triProjected.vertices[0] = Vector_Div(triProjected.vertices[0], triProjected.vertices[0].w);
+				triProjected.vertices[1] = Vector_Div(triProjected.vertices[1], triProjected.vertices[1].w);
+				triProjected.vertices[2] = Vector_Div(triProjected.vertices[2], triProjected.vertices[2].w);
 
 
-			Vector3D vOffsetView = { 1,1,0 };
+				Vector3D vOffsetView = { 1,1,0 };
 
-			triProjected.vertices[0] = Vector_Add(triProjected.vertices[0], vOffsetView);
-			triProjected.vertices[1] = Vector_Add(triProjected.vertices[1], vOffsetView);
-			triProjected.vertices[2] = Vector_Add(triProjected.vertices[2], vOffsetView);
+				triProjected.vertices[0] = Vector_Add(triProjected.vertices[0], vOffsetView);
+				triProjected.vertices[1] = Vector_Add(triProjected.vertices[1], vOffsetView);
+				triProjected.vertices[2] = Vector_Add(triProjected.vertices[2], vOffsetView);
 
-		triProjected.vertices[0].x *= 0.5f * (float)App->win->width;
-		triProjected.vertices[0].y *= 0.5f * (float)App->win->height;
+				triProjected.vertices[0].x *= 0.5f * (float)App->win->width;
+				triProjected.vertices[0].y *= 0.5f * (float)App->win->height;
 
-		triProjected.vertices[1].x *= 0.5f * (float)App->win->width;
-		triProjected.vertices[1].y *= 0.5f * (float)App->win->height;
+				triProjected.vertices[1].x *= 0.5f * (float)App->win->width;
+				triProjected.vertices[1].y *= 0.5f * (float)App->win->height;
 
-		triProjected.vertices[2].x *= 0.5f * (float)App->win->width;
-		triProjected.vertices[2].y *= 0.5f * (float)App->win->height;
+				triProjected.vertices[2].x *= 0.5f * (float)App->win->width;
+				triProjected.vertices[2].y *= 0.5f * (float)App->win->height;
 
-		triProjected.shader_value = dp;
-		TrianglesToDraw.push_back(triProjected);
-
+				triProjected.shader_value = dp;
+				TrianglesToDraw.push_back(triProjected);
+			}
 		//App->render->DrawTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y);
 		//App->render->DrawFilledTriangle(triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, dp);
 		
@@ -196,9 +198,40 @@ bool j1Engine3D::Update(float dt)
 		});
 
 
-	for (auto& triProjected : TrianglesToDraw) {
-		App->render->DrawTriangleLowRes(resolution,triProjected.vertices[0].x, triProjected.vertices[0].y, triProjected.vertices[1].x, triProjected.vertices[1].y, triProjected.vertices[2].x, triProjected.vertices[2].y, triProjected.shader_value);
-	}
+	for (auto& triToRaster: TrianglesToDraw) {
+
+		Triangle_s clipped[2];
+		list<Triangle_s> listTriangles;
+		listTriangles.push_back(triToRaster);
+		int nNewTriangles = 1;
+
+		for (int p = 0; p < 4; p++)
+		{
+			int nTrisToAdd = 0;
+			while (nNewTriangles > 0)
+			{
+				Triangle_s test = listTriangles.front();
+				listTriangles.pop_front();
+				nNewTriangles--;
+
+				switch (p)
+				{
+				case 0:	nTrisToAdd = Triangle_ClipAgainstPlane({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, test, clipped[0], clipped[1]); break;
+				case 1:	nTrisToAdd = Triangle_ClipAgainstPlane({ 0.0f, (float)App->win->height - 1, 0.0f }, { 0.0f, -1.0f, 0.0f }, test, clipped[0], clipped[1]); break;
+				case 2:	nTrisToAdd = Triangle_ClipAgainstPlane({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, test, clipped[0], clipped[1]); break;
+				case 3:	nTrisToAdd = Triangle_ClipAgainstPlane({ (float)App->win->width - 1, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, test, clipped[0], clipped[1]); break;
+				}
+
+				for (int w = 0; w < nTrisToAdd; w++)
+					listTriangles.push_back(clipped[w]);
+			}
+			nNewTriangles = listTriangles.size();
+		}
+
+		for (auto& t : listTriangles) {
+			App->render->DrawTriangleLowRes(resolution, t.vertices[0].x, t.vertices[0].y, t.vertices[1].x, t.vertices[1].y, t.vertices[2].x, t.vertices[2].y, t.shader_value);
+		}
+		}
 
 	return true;
 }
