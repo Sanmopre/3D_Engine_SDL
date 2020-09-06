@@ -45,28 +45,45 @@ bool j1Engine3D::PreUpdate()
 bool j1Engine3D::Update(float dt)
 {
 	
-	App->render->DrawQuad(App->render->unit_rect, 200, 200, 200, 100, true, true);
+	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+		Camera.y -= 1;
+
+	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
+		Camera.y += 1;
+
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
+		Camera.x -= 1;
+
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
+		Camera.x += 1;
+
 
 	Matrix4x4 matRotZ, matRotX;
-	fTheta += 0.02f;
+	//fTheta += 0.02f;
 
 	matRotZ = Matrix_MakeRotationZ(fTheta * 0.5f);
 	matRotX = Matrix_MakeRotationX(fTheta);
 
 	Matrix4x4 matTrans;
-	matTrans = Matrix_MakeTranslation(0.0f, 0.0f, 5.0f);
+	matTrans = Matrix_MakeTranslation(0.0f, 0.0f, 90.0f);
 
 	Matrix4x4 matWorld;
-	matWorld = Matrix_MakeIdentity();	// Form World Matrix
-	matWorld = Matrix_MultiplyMatrix(matRotZ, matRotX); // Transform by rotation
-	matWorld = Matrix_MultiplyMatrix(matWorld, matTrans); // Transform by translation
+	matWorld = Matrix_MakeIdentity();
+	matWorld = Matrix_MultiplyMatrix(matRotZ, matRotX); 
+	matWorld = Matrix_MultiplyMatrix(matWorld, matTrans); 
 
+	LookDir = { 0,0,1 };
+	Vector3D vUp = { 0,1,0 };
+	Vector3D vTarget = Vector_Add(Camera, LookDir);
+
+	Matrix4x4 matCamera = Matrix_PointAt(Camera, vTarget, vUp);
+	Matrix4x4 matView = Matrix_QuickInverse(matCamera);
 
 	vector<Triangle_s> TrianglesToDraw;
 	vector<float> ShaderValue;
 	for (auto tri : mesh_cube.tris)
 	{
-		Triangle_s triProjected, triTransformed;
+		Triangle_s triProjected, triTransformed, triViewed;
 
 		// World Matrix Transform
 		triTransformed.vertices[0] = MultiplyMatrixVector(matWorld, tri.vertices[0]);
@@ -101,10 +118,14 @@ bool j1Engine3D::Update(float dt)
 
 			float dp = max(0.1f, Vector_DotProduct(light_direction, normal));
 
+			triViewed.vertices[0] = MultiplyMatrixVector(matView, triTransformed.vertices[0]);
+			triViewed.vertices[1] = MultiplyMatrixVector(matView, triTransformed.vertices[1]);
+			triViewed.vertices[2] = MultiplyMatrixVector(matView, triTransformed.vertices[2]);
 
-			triProjected.vertices[0] = MultiplyMatrixVector(matProj, triTransformed.vertices[0]);
-			triProjected.vertices[1] = MultiplyMatrixVector(matProj, triTransformed.vertices[1]);
-			triProjected.vertices[2] = MultiplyMatrixVector(matProj, triTransformed.vertices[2]);
+
+			triProjected.vertices[0] = MultiplyMatrixVector(matProj, triViewed.vertices[0]);
+			triProjected.vertices[1] = MultiplyMatrixVector(matProj, triViewed.vertices[1]);
+			triProjected.vertices[2] = MultiplyMatrixVector(matProj, triViewed.vertices[2]);
 
 			triProjected.vertices[0] = Vector_Div(triProjected.vertices[0], triProjected.vertices[0].w);
 			triProjected.vertices[1] = Vector_Div(triProjected.vertices[1], triProjected.vertices[1].w);

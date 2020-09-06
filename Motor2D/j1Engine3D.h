@@ -127,6 +127,7 @@ public:
 	Mesh mesh_cube;
 
 	Vector3D Camera;
+	Vector3D LookDir;
 
 	Triangle_s tri;
 
