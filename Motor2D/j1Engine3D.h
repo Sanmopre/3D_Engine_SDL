@@ -129,12 +129,13 @@ public:
 
 	Vector3D Camera;
 	Vector3D LookDir;
+
 	float fYaw;
+	//float fXaw;
 
 	Triangle_s tri;
 
 	int resolution = 2;
-
 };
 
 #endif // __j1ENGINE3D_H__

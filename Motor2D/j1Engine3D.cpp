@@ -29,7 +29,7 @@ bool j1Engine3D::Awake()
 bool j1Engine3D::Start()
 {
 
-	mesh_cube.LoadFromObjectFile("pot.obj");
+	mesh_cube.LoadFromObjectFile("map.obj");
 
 	matProj = Matrix_MakeProjection(90.0f, (float)App->win->height / (float)App->win->width, 0.1f, 1000.0f);
 	return true;
@@ -45,7 +45,7 @@ bool j1Engine3D::PreUpdate()
 bool j1Engine3D::Update(float dt)
 {
 	
-	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
+	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT) 
 		Camera.y -= 1;
 
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
@@ -57,6 +57,8 @@ bool j1Engine3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 		Camera.x += 1;
 
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+		resolution = 1;
 
 	Vector3D vForward = Vector_Mul(LookDir, 2.0f);
 
@@ -84,7 +86,7 @@ bool j1Engine3D::Update(float dt)
 	matRotX = Matrix_MakeRotationX(fTheta);
 
 	Matrix4x4 matTrans;
-	matTrans = Matrix_MakeTranslation(0.0f, 0.0f, 90.0f);
+	matTrans = Matrix_MakeTranslation(0.0f, 0.0f, 20.0f);
 
 	Matrix4x4 matWorld;
 	matWorld = Matrix_MakeIdentity();
@@ -136,7 +138,7 @@ bool j1Engine3D::Update(float dt)
 		if (Vector_DotProduct(normal, vCameraRay) < 0.0f)
 		{
 
-			Vector3D light_direction = { 0.0f, 1.0f, -1.0f };
+			Vector3D light_direction = { 0.0f, 1.0f, 1.0f };
 			light_direction = Vector_Normalise(light_direction);
 
 			float dp = max(0.1f, Vector_DotProduct(light_direction, normal));
