@@ -76,6 +76,11 @@ bool j1Engine3D::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
 		fYaw -= 0.05f;
 
+	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_REPEAT)
+		fXaw += 0.05f;
+
+	if (App->input->GetKey(SDL_SCANCODE_X) == KEY_REPEAT)
+		fXaw -= 0.05f;
 
 
 
@@ -101,6 +106,12 @@ bool j1Engine3D::Update(float dt)
 	LookDir = MultiplyMatrixVector(matCameraRot, vTarget);
 	vTarget = Vector_Add(Camera, LookDir);
 
+
+	/*
+	Matrix4x4 matCameraRot_x = Matrix_MakeRotationX(fXaw);
+	LookDir = MultiplyMatrixVector(matCameraRot_x, vTarget);
+	vTarget = Vector_Add(Camera, LookDir);
+	*/
 	Matrix4x4 matCamera = Matrix_PointAt(Camera, vTarget, vUp);
 	Matrix4x4 matView = Matrix_QuickInverse(matCamera);
 
@@ -231,6 +242,7 @@ bool j1Engine3D::Update(float dt)
 		}
 
 		for (auto& t : listTriangles) {
+			//App->render->DrawTriangle(t.vertices[0].x, t.vertices[0].y, t.vertices[1].x, t.vertices[1].y, t.vertices[2].x, t.vertices[2].y);
 			App->render->DrawTriangleLowRes(resolution, t.vertices[0].x, t.vertices[0].y, t.vertices[1].x, t.vertices[1].y, t.vertices[2].x, t.vertices[2].y, t.shader_value);
 		}
 		}

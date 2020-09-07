@@ -131,7 +131,7 @@ public:
 	Vector3D LookDir;
 
 	float fYaw;
-	//float fXaw;
+	float fXaw;
 
 	Triangle_s tri;
 
