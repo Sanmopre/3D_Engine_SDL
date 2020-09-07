@@ -64,7 +64,7 @@ bool j1Scene::Update(float dt)
 	//App->render->Blit(img, 0, 0);
 	App->map->Draw();
 
-	p2SString title("3D_Engine");
+	p2SString title("3D_Engine %f" ,dt);
 
 	App->win->SetTitle(title.GetString());
 	return true;

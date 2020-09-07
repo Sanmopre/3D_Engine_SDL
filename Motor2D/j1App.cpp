@@ -95,6 +95,9 @@ bool j1App::Awake()
 		}
 	}
 
+	new_max_framerate = 600;
+	dt = 1 / new_max_framerate;
+
 	return ret;
 }
 
@@ -154,6 +157,13 @@ pugi::xml_node j1App::LoadConfig(pugi::xml_document& config_file) const
 // ---------------------------------------------
 void j1App::PrepareUpdate()
 {
+	frame_count++;
+	last_sec_frame_count++;
+
+	//Calculate the dt: differential time since last frame
+	original_dt = dt = frame_time.ReadSec();
+	if (paused) dt = 0.0f;
+	frame_time.Start();
 }
 
 // ---------------------------------------------
@@ -164,6 +174,30 @@ void j1App::FinishUpdate()
 
 	if(want_to_load == true)
 		LoadGameNow();
+
+
+	if (last_sec_frame_time.Read() > 1000)
+	{
+		last_sec_frame_time.Start();
+		prev_last_sec_frame_count = last_sec_frame_count;
+		last_sec_frame_count = 0;
+	}
+
+	float avg_fps = float(frame_count) / startup_time.ReadSec();
+	float seconds_since_startup = startup_time.ReadSec();
+	uint32 last_frame_ms = frame_time.Read();
+	uint32 frames_on_last_update = prev_last_sec_frame_count;
+
+
+	uint32 delay = (1000 / new_max_framerate) - last_frame_ms;
+	j1PerfTimer perf;
+	if (last_frame_ms < (1000 / new_max_framerate) && capping == true)
+	{
+		perf.Start();
+		SDL_Delay(delay);
+		LOG("We waited for %u milliseconds and got back in %f", delay, perf.ReadMs());
+	}
+
 }
 
 // Call modules before each loop iteration

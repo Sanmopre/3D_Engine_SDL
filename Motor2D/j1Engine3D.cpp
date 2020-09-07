@@ -46,16 +46,16 @@ bool j1Engine3D::Update(float dt)
 {
 	
 	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT) 
-		Camera.y -= 1;
+		Camera.y -= 1 * dt;
 
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-		Camera.y += 1;
+		Camera.y += 1 * dt;
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-		Camera.x -= 1;
+		Camera.x -= 1 * dt;
 
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-		Camera.x += 1;
+		Camera.x += 1 * dt;
 
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 		resolution = 1;
@@ -71,16 +71,16 @@ bool j1Engine3D::Update(float dt)
 
 
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
-		fYaw += 0.05f;
+		fYaw += 0.3f * dt;
 
 	if (App->input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-		fYaw -= 0.05f;
+		fYaw -= 0.3f * dt;
 
 	if (App->input->GetKey(SDL_SCANCODE_C) == KEY_REPEAT)
-		fXaw += 0.05f;
+		fXaw += 0.3f * dt;
 
 	if (App->input->GetKey(SDL_SCANCODE_X) == KEY_REPEAT)
-		fXaw -= 0.05f;
+		fXaw -= 0.3f * dt;
 
 
 
