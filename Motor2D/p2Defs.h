@@ -31,6 +31,9 @@
                               \
     }
 
+typedef unsigned __int32 uint32;
+typedef unsigned __int64 uint64;
+
 #define IN_RANGE( value, min, max ) ( ((value) >= (min) && (value) <= (max)) ? 1 : 0 )
 #define MIN( a, b ) ( ((a) < (b)) ? (a) : (b) )
 #define MAX( a, b ) ( ((a) > (b)) ? (a) : (b) )
