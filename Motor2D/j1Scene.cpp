@@ -42,29 +42,12 @@ bool j1Scene::PreUpdate()
 // Called each loop iteration
 bool j1Scene::Update(float dt)
 {
-	/*
-	if(App->input->GetKey(SDL_SCANCODE_L) == KEY_DOWN)
-		App->LoadGame();
-
-	if(App->input->GetKey(SDL_SCANCODE_S) == KEY_DOWN)
-		App->SaveGame();
-
-	if(App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT)
-		App->render->camera.y -= 1;
-
-	if(App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-		App->render->camera.y += 1;
-
-	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-		App->render->camera.x -= 1;
-
-	if(App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-		App->render->camera.x += 1;
-*/
-	//App->render->Blit(img, 0, 0);
+	App->render->DrawQuad({ 10,770,200,120 }, 100, 100, 100);
+	int x, y;
 	App->map->Draw();
+	App->input->GetMouseMotion(x, y);
 
-	p2SString title("3D_Engine %f" ,dt);
+	p2SString title("3D_Engine %d",x);
 
 	App->win->SetTitle(title.GetString());
 	return true;
