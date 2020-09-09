@@ -30,6 +30,8 @@ bool j1Scene::Awake()
 // Called before the first frame
 bool j1Scene::Start()
 {
+	controls = App->tex->Load("controls.png");
+
 	return true;
 }
 
@@ -42,12 +44,10 @@ bool j1Scene::PreUpdate()
 // Called each loop iteration
 bool j1Scene::Update(float dt)
 {
-	App->render->DrawQuad({ 10,770,200,120 }, 100, 100, 100);
-	int x, y;
-	App->map->Draw();
-	App->input->GetMouseMotion(x, y);
+	//App->render->DrawQuad({ 690,10,300,180 }, 100, 100, 100);
+	App->render->Blit(controls, 590, 10);
 
-	p2SString title("3D_Engine %d",x);
+	p2SString title("3D_Graphics by Santiago Moliner");
 
 	App->win->SetTitle(title.GetString());
 	return true;

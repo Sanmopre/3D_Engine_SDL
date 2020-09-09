@@ -46,19 +46,28 @@ bool j1Engine3D::Update(float dt)
 {
 	
 	if (App->input->GetKey(SDL_SCANCODE_UP) == KEY_REPEAT) 
-		Camera.y -= 1 * dt;
+		Camera.y -= 20 * dt;
 
 	if (App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_REPEAT)
-		Camera.y += 1 * dt;
+		Camera.y += 20 * dt;
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
-		Camera.x -= 1 * dt;
+		Camera.x -= 20 * dt;
 
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-		Camera.x += 1 * dt;
+		Camera.x += 20 * dt;
 
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	if (App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
 		resolution = 1;
+
+	if (App->input->GetKey(SDL_SCANCODE_2) == KEY_DOWN)
+		resolution = 2;
+
+	if (App->input->GetKey(SDL_SCANCODE_3) == KEY_DOWN)
+		resolution = 3;
+
+	if (App->input->GetKey(SDL_SCANCODE_G) == KEY_DOWN)
+		wireframe = !wireframe;
 
 	Vector3D vForward = Vector_Mul(LookDir, 2.0f);
 
@@ -68,6 +77,8 @@ bool j1Engine3D::Update(float dt)
 
 	if (App->input->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
 		Camera = Vector_Sub(Camera, vForward);
+
+
 
 
 	if (App->input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
@@ -151,7 +162,7 @@ bool j1Engine3D::Update(float dt)
 		if (Vector_DotProduct(normal, vCameraRay) < 0.0f)
 		{
 
-			Vector3D light_direction = { -1.0f, 0.0f, -1.0f };
+			Vector3D light_direction = { -1.0f, -0.2f, -1.0f };
 			light_direction = Vector_Normalise(light_direction);
 
 			float dp = max(0.1f, Vector_DotProduct(light_direction, normal));
@@ -243,9 +254,15 @@ bool j1Engine3D::Update(float dt)
 			nNewTriangles = listTriangles.size();
 		}
 
-		for (auto& t : listTriangles) {
-			//App->render->DrawTriangle(t.vertices[0].x, t.vertices[0].y, t.vertices[1].x, t.vertices[1].y, t.vertices[2].x, t.vertices[2].y);
-			App->render->DrawTriangleLowRes(resolution, t.vertices[0].x, t.vertices[0].y, t.vertices[1].x, t.vertices[1].y, t.vertices[2].x, t.vertices[2].y, t.shader_value);
+		if (!wireframe) {
+			for (auto& t : listTriangles) {
+				App->render->DrawTriangleLowRes(resolution, t.vertices[0].x, t.vertices[0].y, t.vertices[1].x, t.vertices[1].y, t.vertices[2].x, t.vertices[2].y, t.shader_value);
+			}
+		}
+		else {
+			for (auto& t : listTriangles) {
+				App->render->DrawTriangle(t.vertices[0].x, t.vertices[0].y, t.vertices[1].x, t.vertices[1].y, t.vertices[2].x, t.vertices[2].y);
+			}
 		}
 		}
 
